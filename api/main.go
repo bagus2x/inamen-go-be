@@ -13,6 +13,7 @@ import (
 	"github.com/bagus2x/inamen-go-be/pkg/auth"
 	"github.com/bagus2x/inamen-go-be/pkg/tournament"
 	"github.com/go-chi/chi/v5"
+	chiMiddleware "github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 )
 
@@ -62,6 +63,9 @@ func main() {
 		AllowCredentials: false,
 		MaxAge:           300,
 	}))
+
+	r.Use(chiMiddleware.Logger)
+	r.Use(chiMiddleware.Recoverer)
 
 	// Repositories
 	tourRepo := tournament.NewRepo(db)
