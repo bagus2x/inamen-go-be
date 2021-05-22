@@ -1,26 +1,45 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"github.com/go-playground/locales/en"
+	ut "github.com/go-playground/universal-translator"
+	"github.com/go-playground/validator/v10"
 )
 
-type Manusia struct {
-	Name interface{}
-	No   interface{}
+type person struct {
+	Name                string `validate:"required,min=4,max=15"`
+	Email               string `validate:"required,email"`
+	Age                 int    `validate:"required,numeric,min=18"`
+	DriverLicenseNumber string `validate:"omitempty,len=12,numeric"`
 }
 
 func main() {
-	type test struct {
-		ID primitive.ObjectID `json:"_id"`
+	validate := validator.New()
+	english := en.New()
+	uni := ut.New(english, english)
+	trans, _ := uni.GetTranslator("en")
+
+	p := person{
+		Name:                "Joe",
+		Email:               "dummyemail",
+		Age:                 0,
+		DriverLicenseNumber: "",
 	}
+	err := validate.Struct(p)
+	errs := translateError(err, trans)
+	fmt.Println(errs)
+}
 
-	var t test
-	err := json.Unmarshal([]byte(`{"_id": "60a7c78aba454118d941fa85"}`), &t)
-
-	fmt.Println(err)
-
-	fmt.Println(t.ID)
+func translateError(err error, trans ut.Translator) (errs []error) {
+	if err == nil {
+		return nil
+	}
+	validatorErrs := err.(validator.ValidationErrors)
+	for _, e := range validatorErrs {
+		translatedErr := fmt.Errorf(e.Translate(trans))
+		errs = append(errs, translatedErr)
+	}
+	return errs
 }

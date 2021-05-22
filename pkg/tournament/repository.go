@@ -193,6 +193,10 @@ func (s *repository) SearchTournamenName(text string) ([]*entity.Tournament, err
 		res = append(res, &tour)
 	}
 
+	if len(res) < 1 {
+		return nil, model.ErrTournamentNotfound
+	}
+
 	return res, nil
 }
 
@@ -220,6 +224,10 @@ func (s *repository) SearchTournamen(text string) ([]*entity.Tournament, error) 
 		}
 
 		res = append(res, &tour)
+	}
+
+	if len(res) < 1 {
+		return nil, model.ErrTournamentNotfound
 	}
 
 	return res, nil

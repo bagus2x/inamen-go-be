@@ -3,6 +3,7 @@ package participant
 import (
 	"github.com/bagus2x/inamen-go-be/pkg/entity"
 	"github.com/bagus2x/inamen-go-be/pkg/model"
+	"github.com/bagus2x/inamen-go-be/utils"
 )
 
 type service struct {
@@ -17,6 +18,10 @@ type Service interface {
 }
 
 func (s *service) CreateParticipant(req *model.CreateParticipantRequest) (*model.CreateParticipantResponse, error) {
+	if err := utils.ValidateStruct(req); err != nil {
+		return nil, model.ErrvalidationFailed(err)
+	}
+
 	players := make([]entity.Player, 0)
 	for _, player := range req.Players {
 		players = append(players, entity.Player(player))
@@ -104,6 +109,10 @@ func (s *service) FetchAllByTourID(id string) ([]*model.FetchParticipantResponse
 }
 
 func (s *service) Update(id string, req *model.UpdateParticipantRequest) (*model.UpdateParticipantResponse, error) {
+	if err := utils.ValidateStruct(req); err != nil {
+		return nil, model.ErrvalidationFailed(err)
+	}
+
 	participant := entity.Participant{
 		TeamName:    req.Description,
 		Description: req.Description,

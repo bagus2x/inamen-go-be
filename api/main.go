@@ -6,8 +6,12 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/bagus2x/inamen-go-be/api/websocket"
+	httpRoutes "github.com/bagus2x/inamen-go-be/api/http"
+	"github.com/bagus2x/inamen-go-be/api/middleware"
+	wsRoutes "github.com/bagus2x/inamen-go-be/api/websocket"
 	"github.com/bagus2x/inamen-go-be/config"
+	"github.com/bagus2x/inamen-go-be/pkg/auth"
+	"github.com/bagus2x/inamen-go-be/pkg/tournament"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
 )
@@ -19,6 +23,7 @@ func main() {
 	mongoMinPool := os.Getenv("MONGO_MIN_POOL")
 	mongoMaxPool := os.Getenv("MONGO_MAX_POOL")
 	mongoMaxIdle := os.Getenv("MONGO_MAX_IDLE_SECOND")
+	accessToken := os.Getenv("ACCESS_TOKEN_KEY")
 
 	minPool, err := strconv.Atoi(mongoMinPool)
 	if err != nil {
@@ -45,10 +50,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	_ = db
-
+	// Router
 	r := chi.NewMux()
 
+	// Global Middlewares
 	r.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"https://*", "http://*", "ws://*", "wss://*"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
@@ -58,11 +63,23 @@ func main() {
 		MaxAge:           300,
 	}))
 
-	r.Get("/", func(rw http.ResponseWriter, r *http.Request) {
-		rw.Write([]byte("hello"))
-	})
+	// Repositories
+	tourRepo := tournament.NewRepo(db)
 
-	websocket.Start(r)
+	// Services
+	authService := auth.NewService(accessToken)
+	tourService := tournament.NewService(tourRepo)
 
-	http.ListenAndServe(":8080", r)
+	// Middlewares
+	authMiddleware := middleware.NewAuth(authService)
+
+	// HTTP End Points
+	httpRoutes.Tournament(r, tourService, authMiddleware)
+
+	// Websocker End Points
+	wsRoutes.Start(r)
+
+	if err := http.ListenAndServe(":8080", r); err != nil {
+		log.Fatal(err)
+	}
 }

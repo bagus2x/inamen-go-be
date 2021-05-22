@@ -13,15 +13,15 @@ type Participant struct {
 }
 
 type Player struct {
-	ID       string `json:"_id"`
-	Username string `json:"username"`
+	ID       string `json:"_id" validate:"required"`
+	Username string `json:"username" validate:"required"`
 }
 
 type CreateParticipantRequest struct {
-	TournamentID primitive.ObjectID `json:"tournamentID"`
-	TeamName     string             `json:"teamName"`
-	Players      []Player           `json:"players"`
-	Description  string             `json:"description"`
+	TournamentID primitive.ObjectID `json:"tournamentID" validate:"required"`
+	TeamName     string             `json:"teamName" validate:"required,lte=100"`
+	Players      []Player           `json:"players" validate:"required,dive,required"`
+	Description  string             `json:"description" validate:"lte=255"`
 }
 
 type CreateParticipantResponse Participant
@@ -29,8 +29,8 @@ type CreateParticipantResponse Participant
 type FetchParticipantResponse Participant
 
 type UpdateParticipantRequest struct {
-	TeamName    string `json:"teamName"`
-	Description string `json:"description"`
+	TeamName    string `json:"teamName" validate:"required,lte=100"`
+	Description string `json:"description" validate:"lte=255"`
 }
 
 type UpdateParticipantResponse Participant

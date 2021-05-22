@@ -32,4 +32,7 @@ var (
 	ErrFailedToUpdateMatch       = fmt.Errorf("%w: Failed to Update match", ErrInternalServer)
 	ErrFailedToDeleteMatch       = fmt.Errorf("%w: Failed to Delete match", ErrInternalServer)
 	ErrMatchNotfound             = fmt.Errorf("%w: Match does not exist", ErrNotFound)
+	ErrInvalidAccessToken        = fmt.Errorf("%w: Invalid Acccess Token", ErrUnauthorized)
+	ErrTokenExpired              = fmt.Errorf("%w: Token expired", ErrUnauthorized)
+	ErrvalidationFailed          = func(err error) error { return fmt.Errorf("%w: %s", ErrBadRequest, err) }
 )

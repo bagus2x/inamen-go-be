@@ -3,6 +3,7 @@ package standing
 import (
 	"github.com/bagus2x/inamen-go-be/pkg/entity"
 	"github.com/bagus2x/inamen-go-be/pkg/model"
+	"github.com/bagus2x/inamen-go-be/utils"
 )
 
 type service struct {
@@ -17,6 +18,10 @@ type Service interface {
 }
 
 func (s *service) CreateStanding(req *model.CreateStandingRequest) (*model.CreateStandingResponse, error) {
+	if err := utils.ValidateStruct(req); err != nil {
+		return nil, model.ErrvalidationFailed(err)
+	}
+
 	standing := entity.Standing{
 		TournamentID: req.TournamentID,
 		Name:         req.Name,
@@ -87,6 +92,10 @@ func (s *service) FetchAllByTourID(id string) ([]*model.FetchStandingResponse, e
 }
 
 func (s *service) Update(id string, req *model.UpdateStandingRequest) (*model.UpdateStandingResponse, error) {
+	if err := utils.ValidateStruct(req); err != nil {
+		return nil, model.ErrvalidationFailed(err)
+	}
+
 	standing := entity.Standing{
 		Name:      req.Name,
 		Spotlight: req.Spotlight,
