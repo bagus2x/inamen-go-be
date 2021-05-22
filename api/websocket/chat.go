@@ -36,7 +36,6 @@ func (cr *chatRoom) listen() {
 }
 
 func (cr *chatRoom) add(u *user) {
-	// create a room if not exist
 	if _, ok := cr.rooms[u.roomID]; !ok {
 		cr.rooms[u.roomID] = make(map[string]*user)
 	}
