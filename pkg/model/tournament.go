@@ -8,7 +8,7 @@ type CreateTourRequest struct {
 	Game              string   `json:"game" validate:"required"`
 	Mode              string   `json:"mode" validate:"required"`
 	Presence          string   `json:"presence" validate:"required"`
-	Visibilty         string   `json:"visiblity" validate:"required"`
+	Visibilty         string   `json:"visibility" validate:"required"`
 	TotalParticipants int      `json:"totalParticipants" validate:"required"`
 	TotalTeamMembers  int      `json:"totalTeamMembers" validate:"required"`
 	Platforms         []string `json:"platforms" validate:"required,dive,required"`

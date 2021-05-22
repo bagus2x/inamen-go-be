@@ -13,13 +13,14 @@ import (
 func Tournament(r chi.Router, service tournament.Service, auth middleware.Authentication) {
 	r.Route("/api/v1/tournaments", func(r chi.Router) {
 		r.Get("/", auth.Auth(getTournamentsByHostID(service)))
+		r.Post("/", auth.Auth(createTournament(service)))
 	})
 }
 
 func createTournament(service tournament.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		hostID := ctx.Value("host").(string)
+		hostID := ctx.Value("userID").(string)
 		username := ctx.Value("username").(string)
 
 		var req model.CreateTourRequest
@@ -44,7 +45,7 @@ func createTournament(service tournament.Service) http.HandlerFunc {
 func getTournamentsByHostID(service tournament.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		hostID := ctx.Value("host").(string)
+		hostID := ctx.Value("userID").(string)
 
 		res, err := service.FetchToursByHostID(hostID)
 		if err != nil {

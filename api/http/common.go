@@ -15,6 +15,7 @@ type jsonResponse struct {
 }
 
 func success(w http.ResponseWriter, data interface{}, message string, status int) {
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	json.NewEncoder(w).Encode(jsonResponse{
 		Data:    data,
@@ -24,6 +25,7 @@ func success(w http.ResponseWriter, data interface{}, message string, status int
 }
 
 func failure(w http.ResponseWriter, message string, status int) {
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	json.NewEncoder(w).Encode(jsonResponse{
 		Data:    nil,
